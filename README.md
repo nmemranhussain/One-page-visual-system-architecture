@@ -20,7 +20,7 @@
 **Agent 4 (Synthesizer):** Combines the SHAP explainability and retrieved guidelines into a final triage recommendation.
 
 **Monitoring:** Active MLOps drift monitoring tracks model performance continuously.
-
+```mermaid
 graph TD
     A[Streamlit Dashboard / Cloud Run] -->|Unstructured Vitals| B(Vertex AI: Orchestrator)
     B -->|Text Parsing| C[Agent 1: Gemini Parser]
@@ -30,3 +30,4 @@ graph TD
     E -->|Medical Guidelines| F
     F -->|Final Triage Output| A
     D -.->|Drift Monitoring| G[(MLOps Monitoring)]
+```
