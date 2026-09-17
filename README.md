@@ -48,13 +48,35 @@ graph TD
 **Agent 3 (BI Copilot):** Groq API rapidly orchestrates the LLM to synthesize the SHAP outputs and model predictions.
 
 **Output Presentation:** Interactive Plotly cohort visualizations are rendered directly within Google Colab for executive review.
+
 ```mermaid
-graph TD
-    A[(Clinical Dataset: 101k+ Records)] -->|SQL Extraction| B[DuckDB]
-    B --> C(Groq API: LLM Orchestrator)
-    C -->|Routing| D[Agent 1: Data Processor]
-    D -->|Features| E[Agent 2: XGBoost + SHAP]
-    E -->|Risk Drivers| F[Agent 3: BI Copilot Synthesizer]
-    F -->|Executive Summaries| G[Plotly Interactive Visualizations]
-    G --> H[Google Colab Interface]
+flowchart TD
+    %% User Layer
+    User([Clinical Care Team / Hospital Administrators]) -->|Natural Language Patient Query| Agent1
+
+    %% Data Initialization
+    subgraph Data [Data Extraction & Database Setup]
+        Kaggle[Kaggle: Diabetes Hospital Readmission Dataset] -->|Ingest| DuckDB[(In-Memory DuckDB Database)]
+        DuckDB -->|Create Engineered Flag: readmitted_30d| Table[patient_features Table]
+    end
+
+    %% Agentic Orchestration Pipeline
+    subgraph Pipeline [3-Agent End-to-End Orchestration]
+        Agent1[Agent 1: Natural-Language SQL Extractor<br/>Gemini + DuckDB]
+        Agent2[Agent 2: Clinical ML Predictor<br/>XGBoost Classifier + SHAP TreeExplainer]
+        Agent3[Agent 3: BI & Executive Synthesizer<br/>Groq Compound LLM]
+    end
+
+    %% Workflow Connections
+    Agent1 <-->|Parameterized SQL Query| Table
+    Agent1 -->|Extracted Features X<br/>time_in_hospital, number_emergency, etc.| Agent2
+    Agent1 -->|Raw Clinical Metrics| Agent3
+
+    Agent2 -->|XGBoost Prediction<br/>30-Day Readmission Probability| Agent3
+    Agent2 -->|SHAP Values<br/>Top 3 Feature Attributions| Agent3
+
+    Agent3 -->|Combine Data & Apply Protocols| Output[Transition-of-Care Report]
+    
+    %% Output
+    Output -->|1. Executive Risk Summary<br/>2. SHAP Clinical Interpretation<br/>3. Targeted Interventions| User
 ```
